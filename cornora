@@ -1,19 +1,14 @@
 #!/usr/bin/env bash
-#:Usage: cornora [-tl cmd] [-tr cmd] [-bl cmd] [-br cmd] [-v]
+#:Usage: cornora [-v] [-iof] [--stop] [-h]
 #:
 #:  cmd:   run the command when mouse reach to the edge of screen:
 #:
-#:  -tl cmd                          top-left
-#:  -tr cmd                          top-right
-#:  -bl cmd                          bottom-left
-#:  -br cmd                          bottom-right
 #:  -iof, --ignore-on-fullscreen     disable command when active window
 #:                                   is fullscreen.
 #:  --stop                           force stop cornora if it's running
 #:  -v                               verbose output
 #:  -h                               show the help
-#:
-# same as py version before, but faster
+
 
 eval $(xdotool getdisplaygeometry --shell)
 G=2;MR=4 W=$((WIDTH-G)); H=$((HEIGHT-G)); DB=/tmp/cornora.lck;
@@ -26,10 +21,6 @@ usage() {
 options() {
     while [[ "$1" ]]; do
         case "$1" in
-            "-tl") tl="$2" ;;
-            "-tr") tr="$2" ;;
-            "-bl") bl="$2" ;;
-            "-br") br="$2" ;;
             "-iof"|"--ignore-on-fullscreen") iof=1 ;;
             "--stop") kill -9 $(cat $DB) && exit ;;
             "-v") verbose=1 ;;
@@ -45,16 +36,29 @@ delay() {
     read ${1:+-t "$1"} -u $_de || :
 }
 
-invoke() {
+# Confirm that the mouse stayed long enough at the current monitor side
+confirmedEdge() {
+    targetSide="$1"
+    eval $(xdotool getmouselocation --shell)
+    [[ "$targetSide" == "left" ]] && [[ -n "$left" && "$X" -gt "$G" ]] && return 1
+    [[ "$targetSide" == "right" ]] && [[ -n "$left" && "$X" -lt "$W" ]] && return 1
+    [[ "$targetSide" == "top" ]] && [[ -n "$left" && "$T" -gt "1" ]] && return 1
+    delay 0.5
+    eval $(xdotool getmouselocation --shell)
+    [[ "$targetSide" == "left" ]] && [[ -n "$left" && "$X" -gt "$G" ]] && return 1
+    [[ "$targetSide" == "right" ]] && [[ -n "$left" && "$X" -lt "$W" ]] && return 1
+    [[ "$targetSide" == "top" ]] && [[ -n "$left" && "$Y" -gt "1" ]] && return 1
+    return 0
+}
+
+# Call the window control command for the current active window that is linked to the currently touched side
+invokeSnapCommand() {
+    targetSide="$1"
     proc=$(IFS=" "; set -- $1; echo $1)
     id="$(pidof -x "$proc")"
-    if [[ -n "$verbose" ]]; then
-        [[ -z "$id" ]] && (eval "$1" &) || (kill -9 $id &)
-    else
-        [[ -z "$id" ]] && (eval "$1" 2&>/dev/null &) || (kill -9 $id 2&>/dev/null &)
-    fi
-    xdotool mousemove_relative $2 $3
-    delay 0.1
+    [[ "$targetSide" == "left" ]] && [[ -z "$id" ]] && WIDTH=`xdpyinfo | grep 'dimensions:' | awk -F'[^0-9]+' '{ print $2 }'` && HALF=$(($WIDTH/2)) && wmctrl -r :ACTIVE: -b add,maximized_vert && wmctrl -r :ACTIVE: -e 0,0,0,$HALF,-1
+    [[ "$targetSide" == "right" ]] && [[ -z "$id" ]] && WIDTH=`xdpyinfo | grep 'dimensions:' | awk -F'[^0-9]+' '{ print $2 }'` && HALF=$(($WIDTH/2)) && wmctrl -r :ACTIVE: -b add,maximized_vert && wmctrl -r :ACTIVE: -e 0,$HALF,0,$HALF,-1
+    [[ "$targetSide" == "top" ]] && [[ -z "$id" ]] && wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
 }
 
 quithandler() {
@@ -74,10 +78,9 @@ if [[ ! -f "$DB" ]]; then
         if [[ -n "$iof" && -n "$(xdotool getactivewindow 2>/dev/null | xargs xprop -id 2>/dev/null | grep E_FULLS)" ]]; then
             delay 0.8
         else
-            [[ -n "$tl" && "$X" -lt "$G" && "$Y" -lt "$G" ]] && invoke "$tl" $((X+MR)) $((Y+MR))
-            [[ -n "$tr" && "$X" -gt "$W" && "$Y" -lt "$G" ]] && invoke "$tr" $((X-MR)) $((Y+MR))
-            [[ -n "$bl" && "$X" -lt "$G" && "$Y" -gt "$H" ]] && invoke "$bl" $((X+MR)) $((Y-MR))
-            [[ -n "$br" && "$X" -gt "$W" && "$Y" -gt "$H" ]] && invoke "$br" $((X-MR)) $((Y-MR))
+            [[ "$X" -lt "$G" ]] && confirmedEdge "left" && invokeSnapCommand "left"
+            [[ "$X" -gt "$W" ]] && confirmedEdge "right" && invokeSnapCommand "right"
+            [[ "$Y" -lt "1" ]] && confirmedEdge "top" && invokeSnapCommand "top"
         fi
         delay 0.2
     done
