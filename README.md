@@ -1,21 +1,17 @@
 # Cornora
-Simple Hot Corner Launcher for X11
+Simple aero-snap-like windows controls for X11 window managers.
 
 ## Dependencies
 
 - `bash`
 - `xdotool`
+- `awk`
+- `wmctrl`
 - `xprop` from `xorg-xprop`
 
 ## Installation
 
-#### Arch Linux
-
-You can install it from your favourite aur helper
-
-[cornora-git at AUR](https://aur.archlinux.org/packages/cornora-git/)
-
-#### Manual
+### Manual
 
 1. Make sure you're already have those dependencies installed
 2. clone this repo into your local storage:
@@ -32,10 +28,6 @@ $ sudo make install
 
 | args                          | conditions                                       |
 | ----------------------------- | ------------------------------------------------ |
-| -tl "command"                 | top-left                                         |
-| -tr "command"                 | top-right                                        |
-| -bl "command"                 | bottom-left                                      |
-| -br "command"                 | bottom-right                                     |
 | -iof, --ignore-on-fullscreen  | disable command when active window is fullscreen |
 | --stop                        | force stop cornora if it's running               |
 | -v                            | verbose mode                                     |
@@ -43,9 +35,9 @@ $ sudo make install
 
 Example
 ```
-$ cornora -tl "skippy-xd"
-# or with multi conditions
-$ cornora -tl "skippy-xd" -tr "rofi -show run"      
+$ cornora
+# or with a condition
+$ cornora -iof
 ```
       
 ## License
