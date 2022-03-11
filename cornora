@@ -72,17 +72,33 @@ trap quithandler SIGINT SIGTERM EXIT
 [[ -z "$@" ]] && usage || options "$@"
 
 if [[ ! -f "$DB" ]]; then
+    moveMode=false
+    moveModeDuration=0
+
     while :;do
         [[ ! -f "$DB" ]] && printf "%s\n" $$ >$DB
         eval $(xdotool getmouselocation --shell)
         if [[ -n "$iof" && -n "$(xdotool getactivewindow 2>/dev/null | xargs xprop -id 2>/dev/null | grep E_FULLS)" ]]; then
             delay 0.8
         else
-            [[ "$X" -lt "$G" ]] && confirmedEdge "left" && invokeSnapCommand "left"
-            [[ "$X" -gt "$W" ]] && confirmedEdge "right" && invokeSnapCommand "right"
-            [[ "$Y" -lt "1" ]] && confirmedEdge "top" && invokeSnapCommand "top"
+            let moveModeDuration++
+            if [[ $moveModeDuration -gt 3 ]];then
+                moveModeDuration=0;
+                moveMode=false
+            fi
+            if $moveMode; then
+                [[ "$X" -lt "$G" ]] && confirmedEdge "left" && invokeSnapCommand "left"
+                [[ "$X" -gt "$W" ]] && confirmedEdge "right" && invokeSnapCommand "right"
+                [[ "$Y" -lt "1" ]] && confirmedEdge "top" && invokeSnapCommand "top"
+            else
+                # detect that we are moving a window
+                if [[ -n $(xinput --query-state 15 | grep 'button\[1\]=down') ]]; then
+                    moveMode=true
+                fi
+            fi
         fi
         delay 0.2
+        
     done
     exit 0
 else    
