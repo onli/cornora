@@ -5,8 +5,8 @@ endif
 .PHONY: install
 install:
 	install -d $(DESTDIR)$(PREFIX)/bin
-	install -m 755 cornora $(DESTDIR)$(PREFIX)/bin/cornora
+	install -m 755 snapforx $(DESTDIR)$(PREFIX)/bin/snapforx
 
 .PHONY: uninstall
 uninstall:
-	test -e $(DESTDIR)$(PREFIX)/bin/cornora && rm $(DESTDIR)$(PREFIX)/bin/cornora || exit 0
+	test -e $(DESTDIR)$(PREFIX)/bin/snapforx && rm $(DESTDIR)$(PREFIX)/bin/snapforx || exit 0
