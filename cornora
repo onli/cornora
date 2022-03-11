@@ -37,7 +37,7 @@ delay() {
 }
 
 mousebuttonDown() {
-    if [[ -n $(xinput --query-state 15 | grep 'button\[1\]=down') ]]; then
+    if [[ -n $(xinput --query-state $mouseId | grep 'button\[1\]=down') ]]; then
         return 0
     fi
     return 1
@@ -105,6 +105,8 @@ trap quithandler SIGINT SIGTERM EXIT
 if [[ ! -f "$DB" ]]; then
     moveMode=false
     moveModeDuration=0
+    eval $(xinput --list | grep '  Mouse' | cut -f 2)
+    mouseId="$id"
 
     while :;do
         [[ ! -f "$DB" ]] && printf "%s\n" $$ >$DB
