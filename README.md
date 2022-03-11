@@ -1,4 +1,4 @@
-# Cornora
+# SnapForX
 Simple aero-snap-like windows controls for X11 window managers.
 
 ## Dependencies
