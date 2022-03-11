@@ -88,7 +88,11 @@ invokeSnapCommand() {
     [[ "$targetSide" == "left" ]] && [[ -z "$id" ]] && WIDTH=`xdpyinfo | grep 'dimensions:' | awk -F'[^0-9]+' '{ print $2 }'` && HALF=$(($WIDTH/2)) && wmctrl -r :ACTIVE: -b add,maximized_vert && wmctrl -r :ACTIVE: -e 0,0,0,$HALF,-1
     [[ "$targetSide" == "right" ]] && [[ -z "$id" ]] && WIDTH=`xdpyinfo | grep 'dimensions:' | awk -F'[^0-9]+' '{ print $2 }'` && HALF=$(($WIDTH/2)) && wmctrl -r :ACTIVE: -b add,maximized_vert && wmctrl -r :ACTIVE: -e 0,$HALF,0,$HALF,-1
     [[ "$targetSide" == "top" ]] && [[ -z "$id" ]] && wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
-    [[ "$targetSide" == "unmaximize" ]] && [[ -z "$id" ]] && wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+    if [[ "$targetSide" == "unmaximize" ]]; then
+        eval $(xdotool getmouselocation --shell)
+        [[ -z "$id" ]] && wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+        xdotool getactivewindow windowmove $X $Y
+    fi
     
 }
 
