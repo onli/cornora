@@ -36,6 +36,35 @@ delay() {
     read ${1:+-t "$1"} -u $_de || :
 }
 
+mousebuttonDown() {
+    if [[ -n $(xinput --query-state 15 | grep 'button\[1\]=down') ]]; then
+        return 0
+    fi
+    return 1
+}
+
+onClientDecoration() {
+    eval $(xdotool getmouselocation --shell)
+    mouseY=$Y
+    eval $(xdotool getactivewindow getwindowgeometry --shell)
+    if [[ "$mouseY - $Y" -lt 30 ]]; then
+        return 0
+    fi
+    return 1
+}
+
+movingDownward() {
+    eval $(xdotool getmouselocation --shell)
+    mouseY1=$Y
+    delay 0.5
+    eval $(xdotool getmouselocation --shell)
+    mouseY2=$Y
+    if [[ "$mouseY2" -gt "$mouseY1" ]]; then
+        return 0
+    fi
+    return 1
+}
+
 # Confirm that the mouse stayed long enough at the current monitor side
 confirmedEdge() {
     targetSide="$1"
@@ -59,6 +88,8 @@ invokeSnapCommand() {
     [[ "$targetSide" == "left" ]] && [[ -z "$id" ]] && WIDTH=`xdpyinfo | grep 'dimensions:' | awk -F'[^0-9]+' '{ print $2 }'` && HALF=$(($WIDTH/2)) && wmctrl -r :ACTIVE: -b add,maximized_vert && wmctrl -r :ACTIVE: -e 0,0,0,$HALF,-1
     [[ "$targetSide" == "right" ]] && [[ -z "$id" ]] && WIDTH=`xdpyinfo | grep 'dimensions:' | awk -F'[^0-9]+' '{ print $2 }'` && HALF=$(($WIDTH/2)) && wmctrl -r :ACTIVE: -b add,maximized_vert && wmctrl -r :ACTIVE: -e 0,$HALF,0,$HALF,-1
     [[ "$targetSide" == "top" ]] && [[ -z "$id" ]] && wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
+    [[ "$targetSide" == "unmaximize" ]] && [[ -z "$id" ]] && wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+    
 }
 
 quithandler() {
@@ -82,7 +113,7 @@ if [[ ! -f "$DB" ]]; then
             delay 0.8
         else
             let moveModeDuration++
-            if [[ $moveModeDuration -gt 3 ]];then
+            if [[ $moveModeDuration -gt 5 ]];then
                 moveModeDuration=0;
                 moveMode=false
             fi
@@ -90,14 +121,15 @@ if [[ ! -f "$DB" ]]; then
                 [[ "$X" -lt "$G" ]] && confirmedEdge "left" && invokeSnapCommand "left"
                 [[ "$X" -gt "$W" ]] && confirmedEdge "right" && invokeSnapCommand "right"
                 [[ "$Y" -lt "1" ]] && confirmedEdge "top" && invokeSnapCommand "top"
+                movingDownward && mousebuttonDown && invokeSnapCommand "unmaximize"
             else
                 # detect that we are moving a window
-                if [[ -n $(xinput --query-state 15 | grep 'button\[1\]=down') ]]; then
+                if mousebuttonDown && onClientDecoration; then
                     moveMode=true
                 fi
             fi
         fi
-        delay 0.2
+        delay 0.1
         
     done
     exit 0
