@@ -2,7 +2,10 @@
 Simple aero-snap-like windows controls for X11 window managers.
 
 
-https://user-images.githubusercontent.com/900380/157977994-15cdb1ed-39c8-41f9-a579-88082b6a07e8.mp4
+
+https://user-images.githubusercontent.com/900380/157988632-5574f11a-b49d-40da-adff-afe4721451d9.mp4
+
+
 
 This does not have the preview animations and will never be as comfortable as snap controls that are integrated natively into a window manager. But it's still a way to provide snap control window movements to X11 window managers that do not have that capability by themselves.
 
