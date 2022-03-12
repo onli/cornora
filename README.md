@@ -40,7 +40,7 @@ Start it as a terminal program
 | args                          | conditions                                       |
 | ----------------------------- | ------------------------------------------------ |
 | -iof, --ignore-on-fullscreen  | disable command when active window is fullscreen |
-| --stop                        | force stop cornora if it's running               |
+| --stop                        | force stop snapforx if it's running              |
 | -v                            | verbose mode                                     |
 | -l                            | enable left edge detection                       |
 | -r                            | enable right edge detection                      |
@@ -56,4 +56,4 @@ Grab a window at its decoration. Move it to the left edge of the screeen to have
       
 ## License
 
-The code, as it is based on cornora, was licensed under the [MIT license](OLD_LICENSE). As of march 2022 this work is licensed under [GNU GPLv3](LICENSE). 
+The code, as it is based on [cornora](https://github.com/okitavera/cornora), was licensed under the [MIT license](OLD_LICENSE). As of march 2022 this work is licensed under [GNU GPLv3](LICENSE). 
