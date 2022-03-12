@@ -22,13 +22,13 @@ This does not have the preview animations and will never be as comfortable as sn
 
 ### Manual
 
-1. Make sure you already have those dependencies installed
+1. Make sure you already have the dependencies installed
 2. Clone this repo into your local storage:
 ```
 $ git clone git@github.com:onli/snapforx.git
 $ cd snapforx
 ```
-3. Install it :
+3. Install it:
 ```
 $ sudo make install
 ```
