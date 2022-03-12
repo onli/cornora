@@ -1,5 +1,5 @@
 # SnapForX
-Simple aero-snap-like windows controls for X11 window managers.
+Simple aerosnap-like window controls for X11 window managers.
 
 
 
