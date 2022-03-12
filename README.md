@@ -16,6 +16,7 @@ This does not have the preview animations and will never be as comfortable as sn
 - `awk`
 - `wmctrl`
 - `xprop` from `xorg-xprop`
+- `xinput`
 
 ## Installation
 
