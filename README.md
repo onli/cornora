@@ -7,7 +7,7 @@ https://user-images.githubusercontent.com/900380/157988632-5574f11a-b49d-40da-ad
 
 
 
-This does not have the preview animations and will never be as comfortable as snap controls that are integrated natively into a window manager. But it's still a way to provide snap control window movements to X11 window managers that do not have that capability by themselves.
+This does not have the preview animations and will never be as comfortable as snap controls that are integrated natively into a window manager. But it's still a way to provide snappy window movement controls to X11 window managers that do not have that capability by themselves.
 
 ## Dependencies
 
