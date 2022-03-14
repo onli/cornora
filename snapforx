@@ -50,7 +50,7 @@ onClientDecoration() {
     eval $(xdotool getmouselocation --shell)
     mouseY=$Y
     eval $(xdotool getactivewindow getwindowgeometry --shell)
-    if [[ "$mouseY - $Y" -lt 30 ]]; then
+    if [[ "$mouseY - $Y" -lt 20 ]]; then
         return 0
     fi
     return 1
@@ -59,11 +59,13 @@ onClientDecoration() {
 movingDownward() {
     eval $(xdotool getmouselocation --shell)
     mouseY1=$Y
-    delay 0.5
-    eval $(xdotool getmouselocation --shell)
-    mouseY2=$Y
-    if [[ "$mouseY2" -gt "$mouseY1" ]]; then
-        return 0
+    if [[ "$Y" -lt 20 ]]; then
+        delay 0.5
+        eval $(xdotool getmouselocation --shell)
+        mouseY2=$Y
+        if [[ "$mouseY2" -gt "$mouseY1" ]]; then
+            return 0
+        fi
     fi
     return 1
 }
